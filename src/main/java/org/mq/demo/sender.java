@@ -15,6 +15,7 @@ import java.util.Date;
  * Created by BinBo on 12/18/2015.
  */
 public class sender implements queues, Runnable {
+
     public static void main(String[] args) {
         sender sender = new sender();
         Thread thread01 = new Thread(sender);
@@ -36,18 +37,21 @@ public class sender implements queues, Runnable {
                 RpcClient service = new RpcClient(channel, "", QUEUE_HELLO);
 
                 Dog dog = new Dog();
-                dog.setName(null);
+                //dog.setName(null);
                 Gson gson = new Gson();
                 String reqMessage = gson.toJson(dog);
                 System.out.println(service.stringCall(reqMessage));
-                JsonObject response = gson.fromJson(service.stringCall(reqMessage), JsonObject.class);
-                int code = (response.get("code") != null) ? response.get("code").getAsInt() : 0;
-                if (code == 400) {
-                    System.out.println("hello");
-                    break;
+                try {
+                    JsonObject response = gson.fromJson(service.stringCall(reqMessage), JsonObject.class);
+                    int code = (response.get("code") != null) ? response.get("code").getAsInt() : 0;
+                    if (code == 400) {
+                        System.out.println("hello");
+                        break;
 
+                    }
+                } catch (Exception ex){
+                    System.out.println("error to get object: " + ex.toString());
                 }
-
                 Thread.sleep(1000);
             } catch (Exception ex) {
                 ex.printStackTrace();

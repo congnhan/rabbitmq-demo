@@ -23,6 +23,9 @@ public class receiver implements queues {
             connectionFactory.setPassword("nhantc");
             connectionFactory.setHost("192.168.100.14");
             connectionFactory.setPort(5672);
+            connectionFactory.setConnectionTimeout(5000);
+            connectionFactory.setAutomaticRecoveryEnabled(true);
+            connectionFactory.setTopologyRecoveryEnabled(true);
 
             Connection connection = connectionFactory.newConnection();
             Channel channel = connection.createChannel();
@@ -35,10 +38,11 @@ public class receiver implements queues {
                     Gson gson = new Gson();
                     JsonObject objRequest = gson.fromJson(request, JsonObject.class);
                     String name = (objRequest.get("name") != null) ? objRequest.get("name").getAsString() : "";
-                    if (!"".equals(name)){
+                    String birthDay = (objRequest.get("birthDay") != null) ? objRequest.get("birthDay").getAsString() : "";
+                    if (!"".equals(name) && !"".equals(birthDay)){
                         int age = objRequest.get("age").getAsInt();
                         System.out.println("Got request " + request);
-                        return "Hello " + name;
+                        return "Hello " + name + " birthDay: " + birthDay ;
                     }
                     JsonObject response = new JsonObject();
                     response.addProperty("code",400);
