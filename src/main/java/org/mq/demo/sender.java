@@ -2,6 +2,7 @@ package org.mq.demo;
 
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -35,9 +36,18 @@ public class sender implements queues, Runnable {
                 RpcClient service = new RpcClient(channel, "", QUEUE_HELLO);
 
                 Dog dog = new Dog();
+                dog.setName(null);
                 Gson gson = new Gson();
                 String reqMessage = gson.toJson(dog);
                 System.out.println(service.stringCall(reqMessage));
+                JsonObject response = gson.fromJson(service.stringCall(reqMessage), JsonObject.class);
+                int code = (response.get("code") != null) ? response.get("code").getAsInt() : 0;
+                if (code == 400) {
+                    System.out.println("hello");
+                    break;
+
+                }
+
                 Thread.sleep(1000);
             } catch (Exception ex) {
                 ex.printStackTrace();

@@ -34,10 +34,16 @@ public class receiver implements queues {
                 public String handleStringCall(String request) {
                     Gson gson = new Gson();
                     JsonObject objRequest = gson.fromJson(request, JsonObject.class);
-                    String name = objRequest.get("name").getAsString();
-                    int age = objRequest.get("age").getAsInt();
-                    System.out.println("Got request " + request);
-                    return "Hello, " + name + " age" + age + "!";
+                    String name = (objRequest.get("name") != null) ? objRequest.get("name").getAsString() : "";
+                    if (!"".equals(name)){
+                        int age = objRequest.get("age").getAsInt();
+                        System.out.println("Got request " + request);
+                        return "Hello " + name;
+                    }
+                    JsonObject response = new JsonObject();
+                    response.addProperty("code",400);
+                    response.addProperty("message", "Wrong input");
+                    return gson.toJson(response);
                 }
             };
 
